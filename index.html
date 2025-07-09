@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>To-Do List</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      min-height: 100vh;
+      cursor: pointer;
+      background: url("https://images.unsplash.com/photo-1506744038136-46273834b3fb") no-repeat center center/cover;
+      transition: background-image 1s ease-in-out;
+    }
+    #date-time-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      font-size: 16px;
+    }
+    #time-display, #date-display {
+      background: transparent;
+      border: none;
+      color: white;
+      text-shadow: 1px 1px 3px #000;
+    }
+    .animated-btn {
+      background: linear-gradient(270deg, #ff7e5f, #feb47b, #86a8e7, #91eae4);
+      background-size: 800% 800%;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 30px;
+      animation: gradientAnimation 6s ease infinite;
+      font-weight: bold;
+      text-shadow: 1px 1px 3px #000;
+    }
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .todo-img {
+      height: 60px;
+      width: 60px;
+    }
+    .todo-container {
+      max-width: 400px;
+      margin: 40px auto;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      color: #212529;
+    }
+    .todo-item {
+      padding: 10px 15px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s;
+    }
+    .todo-item.done {
+      background: rgba(40, 167, 69, 0.7) !important;
+    }
+    .todo-item.done span {
+      text-decoration: line-through;
+      opacity: 0.9;
+    }
+    input[type="text"] {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border: none;
+    }
+    input[type="text"]::placeholder {
+      color: #212529;
+    }
+    .btn {
+      font-size: 14px;
+    }
+    .todo-item span[contenteditable="true"] {
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="date-time-container">
+    <div class="d-flex justify-content-start align-items-center gap-2 animated-btn">
+      <strong class="text-white">Current Time:</strong>
+      <button id="time-display"></button>
+    </div>
+    <div class="d-flex justify-content-start align-items-center gap-2 animated-btn">
+      <strong class="text-white">Date:</strong>
+      <button id="date-display"></button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="todo-container">
+      <h3 class="text-center mb-4">
+        <img src="todo.png" alt="To-Do Icon" class="todo-img"> To-Do List
+      </h3>
+      <div class="input-group mb-3">
+        <input type="text" id="todo-input" class="form-control" placeholder="Add a new task..." />
+        <button class="btn btn-light" onclick="addTodo()">Add</button>
+      </div>
+      <ul id="todo-list" class="list-unstyled mb-0"></ul>
+    </div>
+  </div>
+
+  <script>
+    const input = document.getElementById("todo-input");
+    const list = document.getElementById("todo-list");
+    const timeDisplay = document.getElementById("time-display");
+    const dateDisplay = document.getElementById("date-display");
+
+    function updateDateTime() {
+      const now = new Date();
+      timeDisplay.textContent = now.toLocaleTimeString();
+      dateDisplay.textContent = now.toLocaleDateString();
+    }
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
+    function addTodo() {
+      const text = input.value.trim();
+      if (!text) return;
+
+      const li = document.createElement("li");
+      li.className = "todo-item";
+      li.innerHTML = `
+        <span contenteditable="false">${text}</span>
+        <div>
+          <button class="btn btn-sm btn-success me-1" onclick="markDone(this)"><i class="fa-solid fa-circle-check"></i></button>
+          <button class="btn btn-sm btn-warning me-1" onclick="editTodo(this)"><i class="fa fa-edit"></i></button>
+          <button class="btn btn-sm btn-danger" onclick="removeTodo(this)"><i class="fas fa-trash"></i></button>
+        </div>
+      `;
+      list.appendChild(li);
+      input.value = "";
+    }
+
+    function markDone(button) {
+      const item = button.closest(".todo-item");
+      item.classList.toggle("done");
+    }
+
+    function removeTodo(button) {
+      const item = button.closest(".todo-item");
+      item.remove();
+    }
+
+    function editTodo(button) {
+      const item = button.closest(".todo-item");
+      const span = item.querySelector("span");
+      const editing = span.getAttribute("contenteditable") === "true";
+
+      if (editing) {
+        span.setAttribute("contenteditable", "false");
+        button.innerHTML = '<i class="fa fa-edit"></i>';
+      } else {
+        span.setAttribute("contenteditable", "true");
+        span.focus();
+
+        const range = document.createRange();
+        const sel = window.getSelection();
+        range.selectNodeContents(span);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
+
+        button.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+      }
+    }
+
+    input.addEventListener("keypress", function (e) {
+      if (e.key === "Enter") addTodo();
+    });
+
+    // Background Image Rotation
+    const bgImages = [
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
+      "https://images.unsplash.com/photo-1748025476920-7b79e80a0a7e?q=80&w=1172&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://images.unsplash.com/photo-1503264116251-35a269479413"
+        // "https://images.unsplash.com/photo-1528740561666-dc2479dc08ab"
+    ];
+    let currentBg = 0;
+    setInterval(() => {
+      currentBg = (currentBg + 1) % bgImages.length;
+      document.body.style.background = `url('${bgImages[currentBg]}') no-repeat center center/cover`;
+    }, 3000);
+  </script>
+</body>
+</html>
