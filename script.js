@@ -74,8 +74,9 @@
       "https://images.unsplash.com/photo-1503264116251-35a269479413"
         // "https://images.unsplash.com/photo-1528740561666-dc2479dc08ab"
     ];
-    let currentBg = 0;
-    setInterval(() => {
-      currentBg = (currentBg + 1) % bgImages.length;
-      document.body.style.background = `url('${bgImages[currentBg]}') no-repeat center center/cover`;
-    }, 3000);
+let currentBg = 0;
+setInterval(() => {
+    currentBg =(currentBg+1) % bgImages.length;
+    document.body.style.background =`url('$bgImages[currentBg]}') no-repeat center center/cover`;
+},3000);
+
