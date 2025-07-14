@@ -4,7 +4,7 @@
     const timeDisplay = document.getElementById("time-display");
     const dateDisplay = document.getElementById("date-display");
 
-    function updateDateTime() {
+    function () {
       const now = new Date();
       timeDisplay.textContent = now.toLocaleTimeString();
       dateDisplay.textContent = now.toLocaleDateString();
