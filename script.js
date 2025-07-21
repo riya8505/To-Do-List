@@ -4,11 +4,15 @@
     const timeDisplay = document.getElementById("time-display");
     const dateDisplay = document.getElementById("date-display");
 
-    function updateDateTime() {
-      const now = new Date();
-      timeDisplay.textContent = now.toLocaleTimeString();
-      dateDisplay.textContent = now.toLocaleDateString();
-    }
+ function updateDateTime() {
+  const now = new Date();
+  timeDisplay.textContent = now.toLocaleTimeString();
+
+  const day = String(now.getDate()).padStart(2, "0");
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const year = now.getFullYear();
+  dateDisplay.textContent = `${day}/${month}/${year}`;
+}
     setInterval(updateDateTime, 1000);
     updateDateTime();
 
